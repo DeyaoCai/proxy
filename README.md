@@ -27,5 +27,6 @@ const BASE_SERVE_CONFIG = {
     WS_DOMAIN,
     DEFAULT_DOMAIN
 };
+由于需要登陆信息，故需要 手动替换 session;
 
 在本地启用后：当由服务请求进来后，将转发到本地的 domain:80/原path，然后将请求结果转发给原请求

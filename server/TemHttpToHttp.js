@@ -51,7 +51,7 @@ const httpsAppConfig = (function parseRequestConfigItem(REQUEST_CONFIG) {
     });
     return ajax;
 })(REQUEST_CONFIG);
-
+const session = `8573e948-9eb8-4f28-80e9-8f5a36250a50`;
 function parsePath(path=``) {
     return path.split("?").shift().replace(/^(\/\/|\/)/,"");
 }
@@ -88,7 +88,7 @@ module.exports = function httpApp(req, res) {
         };
         options.headers.host = domain;
         options.headers.referer = `http://${domain}`;
-        options.headers.cookie = `SESSION=8573e948-9eb8-4f28-80e9-8f5a36250a50`;
+        options.headers.cookie = `SESSION=${session}`;
         options.headers[`Content-Length`] = Buffer.byteLength(sentData, 'utf8');
 
         delete options.headers.origin;
