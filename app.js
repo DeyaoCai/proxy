@@ -4,8 +4,8 @@ const http = require('http');
 const httpsToHttpDefaultPort = 443;
 const httpToHttpDefaultPort = 9990;
 
-const httpToHttp = require('./server/httpToHttp');
-const httpsToHttp = require('./server/httpsToHttp');
+const httpToHttp = require('./server/TemHttpToHttp');
+const httpsToHttp = require('./server/TemHttpsToHttp');
 
 // https 需要安全证书
 const options = {
