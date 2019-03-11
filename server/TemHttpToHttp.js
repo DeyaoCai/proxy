@@ -51,7 +51,7 @@ const httpsAppConfig = (function parseRequestConfigItem(REQUEST_CONFIG) {
     });
     return ajax;
 })(REQUEST_CONFIG);
-const session = `8573e948-9eb8-4f28-80e9-8f5a36250a50`;
+const session = `a21c59f4-dce5-4019-9358-ebc19da8813c`;
 function parsePath(path=``) {
     return path.split("?").shift().replace(/^(\/\/|\/)/,"");
 }
