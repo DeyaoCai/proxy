@@ -91,7 +91,11 @@ module.exports = function httpApp(req, res) {
     if (req.url === `/`) {
       res.end(fs.readFileSync(path.join(__dirname ,`../../Tape-frontend/index.html`)));
     }else if (/[\.#]/.test(req.url)) {
+      try {
       res.end(fs.readFileSync(path.join(__dirname ,`../../Tape-frontend/${req.url}`)));
+      } catch (e) {
+        res.end(`{}`);
+      }
     } else {
       // 字符编码
       res.setHeader("ContentType", "charset=utf-8");
