@@ -1,4 +1,17 @@
 const path = require('path');
+const http = require("http");
+const socketIo = require('socket.io');
+const fs = require('fs');
+function makeExecLater(fn) {
+  let time = 0;
+  return function () {
+    const thisTime = time = `${Date.now()} ${Math.random()}`;
+    setTimeout(() => {
+      if (thisTime === time) fn.apply(null, arguments);
+    }, 1000)
+  }
+}
+
 // const getThirdModule = require(path.join(__dirname, `./src/tools/getThirdModule.js`));
 // const express = getThirdModule('express');
 const express = require('express');
@@ -14,6 +27,21 @@ const connection = mysql.createConnection({
 });
 
 const app = express();
+const httpApp = http.Server(app);
+const socket = socketIo(httpApp);
+let outerSocket;
+socket.on('connection', function(socket){
+  // outerSocket.push(socket);
+  outerSocket || ( outerSocket = socket);
+  console.log('a user connected');
+
+});
+fs.watch(path.join(__dirname, `./expresServer/www`), makeExecLater(function refreshPage() {
+  outerSocket && outerSocket.broadcast.emit('refresh');
+  console.log(`refresh page`);
+}));
+
+
 app.use(function setHttpOptions(req, res, next) {
   req.ctoolsOpt = {
     devToolsDir: path.join(__dirname, '../../')
@@ -29,11 +57,10 @@ app.use(function crosHeaders(req, res, next) {
     'Access-Control-Allow-Origin': req.headers.origin || '*',
     'Access-Control-Allow-Headers': 'X-Requested-With, content-type',
     'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
-    'Content-Type': 'application/json; charset=utf-8'
+    'Content-Type': `text/html` || 'application/json; charset=utf-8'
   });
   next();
 });
-
 // 静态服务器 // 暂时不能去图片
 app.use(express.static(path.join(__dirname, 'expresServer/www')));
 
@@ -61,10 +88,8 @@ require(`./expresServer/readRoutes.js`)(
 );
 
 // 监听端口
-app.server = app.listen(port, () => {
+app.server = httpApp.listen(port, function(){
   console.log(`server running @ http://localhost:${port}`)
 });
 // 暴露出去，貌似没有意义；
 module.exports = app;
-
-
