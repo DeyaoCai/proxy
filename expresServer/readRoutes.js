@@ -1,16 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const multer = require('multer');
 
-function _readDir(path, reg, methodParseFn, app) { // path 读取的目录， reg 文件匹配的正则， result 为结果集
-  const pathes = fs.readdirSync(path);
-  const fileReg = /\./;
+function _readDir(prevpath, reg, methodParseFn, app) { // path 读取的目录， reg 文件匹配的正则， result 为结果集
+  const pathes = fs.readdirSync(prevpath);
   const nextApp = express();
   pathes.forEach(item => {
-    if (fileReg.test(item)) { // 判断是否为文件
+    if (fs.statSync(path.join(prevpath, item)).isFile()) { // 判断是否为文件
       if (reg.test(item)) {
         const method = methodParseFn(item).toLowerCase();
-        const param = [`/${item.replace(reg, ``)}`, require(`${path}/${item}`)];
+        const param = [`/${item.replace(reg, ``)}`, require(`${prevpath}/${item}`)];
         if (method === `post`) {
           param.splice(1, 0, multer().array());
         }
@@ -18,7 +18,7 @@ function _readDir(path, reg, methodParseFn, app) { // path 读取的目录， re
       }
     } else {
       app.use(`/${item}`, nextApp);
-      _readDir(path + "/" + item, reg, methodParseFn, nextApp); // 文件夹的话 就往下读取
+      _readDir(prevpath + "/" + item, reg, methodParseFn, nextApp); // 文件夹的话 就往下读取
     }
     app.use(express.static(`${__dirname}/proxy/www`))
   });

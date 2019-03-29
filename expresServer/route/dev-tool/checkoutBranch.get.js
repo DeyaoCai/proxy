@@ -4,8 +4,11 @@ const cProcess = require("child_process");
 const cwd = process.cwd();
 module.exports = function (req, res) {
   let {repertory, workspace, branchs, branch} = req.query;
+
   branchs = branchs && branchs.map(branch => branch.split("/").pop().replace(/^\*/ ,"").trim()) || [];
+
   branch && branchs.push(branch.split("/").pop().replace(/^\*/ ,"").trim());
+
   const confPath = path.join(cwd, "./ctools.conf/bizConfs", `${workspace}.js`);
   const conf = require(confPath);
   const branchPath = path.join(cwd, conf.repertoryPath, repertory);
@@ -28,9 +31,10 @@ module.exports = function (req, res) {
       repertoryItem.branch = next;
       fs.writeFileSync(confPath, `module.exports = ${JSON.stringify(conf)}`);
     });
-    res.send({data: nextBranch && nextBranch.replace(/^\*/, "").trim(), code: 0});
+    res.send({data: nextBranch, code: 0});
     process.chdir(cwd);
   }catch (e) {
+    console.log(e);
     process.chdir(cwd);
     res.send({data: null, code: 0});
   }
