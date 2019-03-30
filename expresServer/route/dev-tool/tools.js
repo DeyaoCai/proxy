@@ -105,7 +105,6 @@ module.exports = function getTools(rootPath) {
     }))
   }
   function getWorkspaceDirs(bizType) {
-    console.log(bizType);
     // 获取工作空间的 分支情况
     return getWorkspaceConf(bizType).map(item => {
       try {

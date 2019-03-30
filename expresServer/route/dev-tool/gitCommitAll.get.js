@@ -7,7 +7,7 @@ module.exports = function (req, res) {
   const tools = Tools(req.ctoolsOpt.devToolsDir);
   const {workSpace} = req.query;
   const repertoryPath = tools.getWorkspaceDirs(workSpace);
-  console.log(repertoryPath)
+  console.log(workSpace)
   repertoryPath[0].forEach(item => {
     console.log(item)
     try{process.chdir(item);}catch(e){}
