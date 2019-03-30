@@ -32,7 +32,7 @@ module.exports = function (req, res) {
       } else{}
       let next = cProcess.execSync("git branch -a", {encoding: "utf-8"}).split(/\n/).find(isCurrentBranch);
       nextBranch.push(repertoryItem);
-      repertoryItem.branch = next;
+      repertoryItem.branch = trim(next);
       fs.writeFileSync(confPath, `module.exports = ${JSON.stringify(conf.dto)}`);
     });
     res.send({data: nextBranch, code: 0});

@@ -9,7 +9,7 @@ module.exports = function (req, res) {
   entryJson.entry = workspace;
   tools.writeEntryJson(entryJson);
   try {
-    console.log("start server!")
+    console.log("start server!");
     process.chdir(req.ctoolsOpt.devToolsDir);
     const out = cProcess.exec(`npm run devCdy`, {
       maxBuffer: 2000*1024,
@@ -29,5 +29,4 @@ module.exports = function (req, res) {
   } catch (e) {
     res.send({data: "fail", code: 1});
   }
-
 };

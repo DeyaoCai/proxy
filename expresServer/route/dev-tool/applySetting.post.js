@@ -16,5 +16,4 @@ module.exports = function (req, res) {
   } catch (e) {
     res.send({data: "fail", code: 1});
   }
-
 };
