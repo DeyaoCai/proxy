@@ -2,6 +2,56 @@ const fs = require("fs");
 const path = require("path");
 const cProcess = require("child_process");
 
+
+
+
+function parseIndex(indexSting) {
+  let ret;
+  indexSting.replace(/^@@ +-(\d*),(\d*) \+(\d*),(\d*) +@@/,function (xxx, oriStart, oriLen, nowStart, nowLen) {
+    ret = {oriStart, oriLen, nowStart, nowLen};
+  });
+  return ret;
+}
+
+function parseGitDiff(gitResult, repertory) {
+  const blocks = gitResult.split(`diff --git `);
+  blocks.shift();
+  return blocks.map(item => {
+    const [filenames, hash, orifile, newfile, ...blocks] = item.split(/\n/);
+    const ret = {name: orifile.slice(1), list: [], isActive: false, repertory};
+    let midData;
+    let oriStart, nowStart;
+    blocks.forEach(item => {
+      if (/^@@.*@@/.test(item)) {
+        midData = parseIndex(item);
+        oriStart = midData.oriStart - 1;
+        nowStart = midData.nowStart - 1;
+        midData.list = [];
+        ret.list.push(midData);
+      } else {
+        oriStart++;
+        nowStart++;
+        const pushItem = {name: item, ori: oriStart, now: nowStart, isActive: false};
+        midData.list.push(pushItem);
+        if (/^\+/.test(item)) {
+          pushItem.ori = null;
+          oriStart--;
+        }
+        if (/^-/.test(item)) {
+          pushItem.now = null;
+          nowStart--;
+        }
+      }
+    });
+    return ret;
+  });
+}
+
+function cRequire(paths) {
+  let ret;
+  eval(`ret = ${fs.readFileSync(paths, {encoding: "utf-8"})}`);
+  return ret;
+}
 function getRepertoryNameByGitUrl(gitUrl) {
   return gitUrl.replace(/(?:.*\/)([^\/]+)(?:\.git)$/, "$1")
 }
@@ -23,9 +73,7 @@ function parseBranch(gitBranchAllData){
   });
   return brances;
 }
-
 module.exports = function getTools(rootPath) {
-
   const type = require(path.join(rootPath, `sections/ctools/src/type.js`));
   const confPath = `ctools.conf`;
   const confRootPath = path.join(rootPath, confPath);
@@ -41,7 +89,7 @@ module.exports = function getTools(rootPath) {
     fs.writeFileSync(path.join(bizRootPath, `${bizType}.js`), `module.exports = ${JSON.stringify(conf)}`);
   }
   function getEntryJson(){
-    return require(path.join(confRootPath, entryJsonPath))
+    return cRequire(path.join(confRootPath, entryJsonPath));
   }
   function getWorkspaceConf(bizType) {
     // 获取 工作空间配置
@@ -55,6 +103,18 @@ module.exports = function getTools(rootPath) {
       name: item.replace(/\.[^\.]+$/, ""),
       dto: require(path.join(bizRootPath, item))
     }))
+  }
+  function getWorkspaceDirs(bizType) {
+    // 获取工作空间的 分支情况
+    return getWorkspaceConf(bizType).map(item => {
+      try {
+        const repertoryrootPath = path.join(rootPath, item.dto.repertoryPath);
+        return fs.readdirSync(repertoryrootPath).filter(
+          // 筛选工作空间相关的文件夹 // 排除其他文件以及 静态，依赖文件夹
+          item => (!["static", "node_modules"].includes(item) && !fs.statSync(path.join(repertoryrootPath, item)).isFile())
+        ).map(item => path.join(repertoryrootPath, item));
+      } catch(e){return []}
+    });
   }
   function getWorkSpaces(bizType) {
     // 获取工作空间的 分支情况
@@ -80,7 +140,8 @@ module.exports = function getTools(rootPath) {
   }
   return {
     getEntryJson,getWorkspaceConf, getWorkSpaces,
-    writeEntryJson, writeWorkspaceConf
+    writeEntryJson, writeWorkspaceConf, cRequire, parseGitDiff, getWorkspaceDirs
 
   }
 }
+
