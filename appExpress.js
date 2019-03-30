@@ -2,6 +2,8 @@ const path = require('path');
 const http = require("http");
 const socketIo = require('socket.io');
 const fs = require('fs');
+
+// 节流
 function makeExecLater(fn) {
   let time = 0;
   return function () {
@@ -11,9 +13,6 @@ function makeExecLater(fn) {
     }, 1000)
   }
 }
-
-// const getThirdModule = require(path.join(__dirname, `./src/tools/getThirdModule.js`));
-// const express = getThirdModule('express');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -31,7 +30,6 @@ const httpApp = http.Server(app);
 const socket = socketIo(httpApp);
 let outerSocket;
 socket.on('connection', function(socket){
-  // outerSocket.push(socket);
   outerSocket || ( outerSocket = socket);
   console.log('a user connected');
 
