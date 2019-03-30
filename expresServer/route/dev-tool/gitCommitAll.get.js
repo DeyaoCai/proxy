@@ -8,7 +8,6 @@ module.exports = function (req, res) {
   const {workspace} = req.query;
   const repertoryPath = tools.getWorkspaceDirs(workspace);
   repertoryPath[0].forEach(item => {
-    console.log(item)
     try{process.chdir(item);}catch(e){}
     try{cProcess.execSync(`git add .`);}catch(e){}
     try{cProcess.execSync(`git commit -m "auto commit"`);}catch(e){}

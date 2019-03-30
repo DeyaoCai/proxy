@@ -5,7 +5,6 @@ const Tools = require("./tools.js");
 module.exports = function (req, res) {
   const cwd =process.cwd();
   const tools = Tools(req.ctoolsOpt.devToolsDir);
-  const entryJson = tools.getEntryJson();
   const {workspace} = req.query;
   const workspaceConf = tools.getWorkspaceConf(workspace);
   const workspaceConfPath = workspaceConf[0].dto.repertoryPath;

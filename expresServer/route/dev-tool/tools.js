@@ -1,10 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const cProcess = require("child_process");
-
-
-
-
+const cwd = process.cwd();
 function parseIndex(indexSting) {
   let ret;
   indexSting.replace(/^@@ +-(\d*),(\d*) \+(\d*),(\d*) +@@/,function (xxx, oriStart, oriLen, nowStart, nowLen) {
@@ -101,7 +98,7 @@ module.exports = function getTools(rootPath) {
     }
     return (list.length ? list : fs.readdirSync(bizRootPath)).map(item => ({
       name: item.replace(/\.[^\.]+$/, ""),
-      dto: require(path.join(bizRootPath, item))
+      dto: cRequire(path.join(bizRootPath, item))
     }))
   }
   function getWorkspaceDirs(bizType) {
@@ -133,15 +130,15 @@ module.exports = function getTools(rootPath) {
             repertory.branches = branches;
             repertory.name = key;
           } catch(e) {}
+          process.chdir(cwd);
         });
-      } catch(e){}
+      } catch(e){process.chdir(cwd);}
       return item;
     });
   }
   return {
     getEntryJson,getWorkspaceConf, getWorkSpaces,
     writeEntryJson, writeWorkspaceConf, cRequire, parseGitDiff, getWorkspaceDirs
-
   }
-}
+};
 
