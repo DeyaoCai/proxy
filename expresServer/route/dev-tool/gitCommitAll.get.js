@@ -12,7 +12,7 @@ module.exports = function (req, res) {
     console.log(item)
     try{process.chdir(item);}catch(e){console.log(e)}
     try{cProcess.execSync(`git add .`);}catch(e){console.log(e)}
-    try{cProcess.execSync(`git commit -m "auto-commit"`);}catch(e){console.log(e)}
+    try{cProcess.execSync(`git commit -m "auto commit"`);}catch(e){console.log(e)}
     try{process.chdir(cwd);}catch(e){console.log(e)}
   });
   try {
