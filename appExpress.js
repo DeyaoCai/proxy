@@ -28,6 +28,12 @@ const connection = mysql.createConnection({
 const app = express();
 const httpApp = http.Server(app);
 const socket = socketIo(httpApp);
+const socketFns = {
+  applySetting: require(path.join(__dirname, "./expresServer/socket/dev-tool/applySetting.js")),
+  installDependence: require(path.join(__dirname, "./expresServer/socket/dev-tool/installDependence.js")),
+  getLatestCodes: require(path.join(__dirname, "./expresServer/socket/dev-tool/getLatestCodes.js")),
+  gitCommitAll: require(path.join(__dirname, "./expresServer/socket/dev-tool/gitCommitAll.js")),
+};
 let outerSocket;
 socket.on('connection', function(socket){
   outerSocket || ( outerSocket = socket);
@@ -35,12 +41,11 @@ socket.on('connection', function(socket){
     ctoolsOpt:{devToolsDir: path.join(__dirname, '../../')},
   };
   console.log('a user connected');
-
-  socket.on('applySetting', function(data) {
-    // console.log('message: ' , data);
-    require(path.join(__dirname, "./expresServer/socket/dev-tool/applySetting.js"))(data, option, socket);
-  });
-
+  Object.keys(socketFns).forEach(item =>
+    socket.on(item, (data) => {
+      socketFns[item](data, socket, option);
+    })
+  )
 });
 
 

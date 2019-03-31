@@ -3,7 +3,7 @@ const fs = require("fs");
 const cProcess = require("child_process");
 const cwd = process.cwd();
 const Tools = require("./tools.js");
-module.exports = function (data, option, socket) {
+module.exports = function (data, socket, option) {
   const tools = Tools(option.ctoolsOpt.devToolsDir);
   const entryJson = tools.getEntryJson();
   const {name, dto} = data;
@@ -13,10 +13,22 @@ module.exports = function (data, option, socket) {
   try {
     process.chdir(option.ctoolsOpt.devToolsDir);
     console.log("start get codes");
-    cProcess.execSync("npm run getCodes");
-    console.log("complete get codes");
+    const out = cProcess.exec(`npm run getCodes`, {},e => {if (e) console.log(e);});
+    out.stdout.on('data', (data) => {
+      console.log(data);
+      socket.emit("applySettingData", data);
+    });
+    out.stderr.on('data', (data) => {
+      console.log(data);
+      socket.emit("applySettingData", data);
+    });
+    out.on('close', (code) => {
+      console.log("complete get codes");
+      socket.emit("applySettingData", code);
+      socket.emit("applySettingSuccess", tools.getWorkSpaces(entryJson.entry));
+    });
     process.chdir(cwd);
-    socket.emit("applySettingSuccess", tools.getWorkSpaces(entryJson.entry));
+
   } catch (e) {
     console.log(e);
     process.chdir(cwd);
