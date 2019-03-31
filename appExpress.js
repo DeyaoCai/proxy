@@ -31,13 +31,24 @@ const socket = socketIo(httpApp);
 let outerSocket;
 socket.on('connection', function(socket){
   outerSocket || ( outerSocket = socket);
+  const option = {
+    ctoolsOpt:{devToolsDir: path.join(__dirname, '../../')},
+  };
   console.log('a user connected');
 
+  socket.on('applySetting', function(data) {
+    // console.log('message: ' , data);
+    require(path.join(__dirname, "./expresServer/socket/dev-tool/applySetting.js"))(data, option, socket);
+  });
+
 });
-fs.watch(path.join(__dirname, `./expresServer/www`), makeExecLater(function refreshPage() {
-  outerSocket && outerSocket.broadcast.emit('refresh');
-  console.log(`refresh page`);
-}));
+
+
+
+// fs.watch(path.join(__dirname, `./expresServer/www`), makeExecLater(function refreshPage() {
+//   outerSocket && outerSocket.broadcast.emit('refresh');
+//   console.log(`refresh page`);
+// }));
 
 
 app.use(function setHttpOptions(req, res, next) {

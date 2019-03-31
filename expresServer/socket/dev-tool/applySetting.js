@@ -1,21 +1,25 @@
 const path = require('path');
 const fs = require("fs");
 const cProcess = require("child_process");
+const cwd = process.cwd();
 const Tools = require("./tools.js");
-module.exports = function (req, res) {
-  const tools = Tools(req.ctoolsOpt.devToolsDir);
+module.exports = function (data, option, socket) {
+  const tools = Tools(option.ctoolsOpt.devToolsDir);
   const entryJson = tools.getEntryJson();
-  const {name, dto} = req.body;
+  const {name, dto} = data;
   entryJson.entry = name;
   tools.writeEntryJson(entryJson);
   tools.writeWorkspaceConf(name, dto);
   try {
-    process.chdir(req.ctoolsOpt.devToolsDir);
+    process.chdir(option.ctoolsOpt.devToolsDir);
     console.log("start get codes");
     cProcess.execSync("npm run getCodes");
     console.log("complete get codes");
-    res.send({data: tools.getWorkSpaces(entryJson.entry), code: 0});
+    process.chdir(cwd);
+    socket.emit("applySettingSuccess", tools.getWorkSpaces(entryJson.entry));
   } catch (e) {
-    res.send({data: "fail", code: 1});
+    console.log(e);
+    process.chdir(cwd);
+    socket.emit("applySettingFail", {data: "fail", code: 1});
   }
 };
