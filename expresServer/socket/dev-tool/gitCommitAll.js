@@ -27,6 +27,7 @@ module.exports = function (req, socket, option) {
         console.log(`git push complete ${item}`);
         count --;
         if (count <= 0) {
+          console.log(546)
           socket.emit("gitCommitAllSuccess", `git commit all complete!`);
         } else{
           // socket.emit("gitCommitAllData", `git push complete ${item}`);
