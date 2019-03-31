@@ -29,12 +29,12 @@ module.exports = function (req, socket, option) {
         if (count <= 0) {
           socket.emit("gitCommitAllSuccess", `git commit all complete!`);
         } else{
-          socket.emit("gitCommitAllData", `git push complete ${item}`);
+          // socket.emit("gitCommitAllData", `git push complete ${item}`);
         }
         process.chdir(cwd);
       }catch(e){}
     },10)
   });
   console.log(`start commit all!`);
-  socket.emit("gitCommitAllData", `start commit all!`);
+  // socket.emit("gitCommitAllData", `start commit all!`);
 };
