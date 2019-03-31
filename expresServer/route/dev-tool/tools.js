@@ -7,6 +7,12 @@ function parseIndex(indexSting) {
   indexSting.replace(/^@@ +-(\d*),(\d*) \+(\d*),(\d*) +@@/,function (xxx, oriStart, oriLen, nowStart, nowLen) {
     ret = {oriStart, oriLen, nowStart, nowLen};
   });
+  ret || indexSting.replace(/^@@ +-(\d*) \+(\d*),(\d*) +@@/,function (xxx, oriStart, nowStart, nowLen) {
+    ret = {oriStart, nowStart, nowLen};
+  });
+  ret || indexSting.replace(/^@@ +-(\d*),(\d*) \+(\d*) +@@/,function (xxx, oriStart, oriLen, nowStart) {
+    ret = {oriStart, oriLen, nowStart};
+  });
   return ret;
 }
 
