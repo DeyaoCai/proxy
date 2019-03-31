@@ -13,17 +13,14 @@ module.exports = function (req, socket, option) {
       try{process.chdir(item);}catch(e){}
       try{
         console.log(`git add . ${item}`);
-        // socket.emit("gitCommitAllData", `git add . ${item}`);
         cProcess.execSync(`git add .`);
       }catch(e){}
       try{
         console.log(`git commit -m "auto commit" ${item}`);
-        // socket.emit("gitCommitAllData", `git commit -m "auto commit" ${item}`);
         cProcess.execSync(`git commit -m "auto commit"`);
       }catch(e){}
       try{
         console.log(`git push ${item}`);
-        // socket.emit("gitCommitAllData", `git push ${item}`);
         cProcess.execSync(`git push`);
       }catch(e){}
       try{
