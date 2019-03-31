@@ -26,7 +26,6 @@ function parseGitDiff(gitResult, repertory) {
     let oriStart, nowStart;
     blocks.forEach(item => {
       if (/^@@.*@@/.test(item)) {
-        console.log(item);
         midData = parseIndex(item);
         oriStart = midData.oriStart - 1;
         nowStart = midData.nowStart - 1;
